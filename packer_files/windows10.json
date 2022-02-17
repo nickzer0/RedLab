@@ -1,0 +1,108 @@
+{
+  "builders": [
+    {
+      "vnc_over_websocket": true,
+      "insecure_connection": true,
+      "boot_wait": "6m",
+      "boot_command": "",
+      "communicator": "winrm",
+      "disk_size": 61440,
+      "floppy_files": [
+        "{{user `autounattend`}}",
+        "./packer/floppy/WindowsPowershell.lnk",
+        "./packer/floppy/PinTo10.exe",
+        "./packer/scripts/fixnetwork.ps1",
+        "./packer/scripts/rearm-windows.ps1",
+        "./packer/scripts/disable-screensaver.ps1",
+        "./packer/scripts/disable-winrm.ps1",
+        "./packer/scripts/enable-winrm.ps1",
+        "./packer/scripts/microsoft-updates.bat",
+        "./packer/scripts/win-updates.ps1",
+        "./packer/scripts/unattend.xml",
+        "./packer/scripts/sysprep.bat"
+      ],
+      "guest_os_type": "windows9-64",
+      "keep_registered": true,
+      "headless": false,
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "shutdown_timeout": "2h",
+      "shutdown_command": "a:/sysprep.bat",
+      "skip_export": true,
+      "remote_datastore": "{{user `esxi_datastore`}}",
+      "remote_host": "{{user `esxi_host`}}",
+      "remote_username": "{{user `esxi_username`}}",
+      "remote_password": "{{user `esxi_password`}}",
+      "remote_type": "esx5",
+      "type": "vmware-iso",
+      "version": 11,
+      "vm_name": "Windows10",
+      "vnc_disable_password": true,
+      "vnc_port_min": 5900,
+      "vnc_port_max": 5980,
+      "vmx_data": {
+        "ethernet0.networkName": "{{user `esxi_network_with_dhcp_and_internet`}}",
+        "memsize": "8192",
+        "numvcpus": "2",
+        "scsi0.virtualDev": "lsisas1068",
+        "tools.syncTime": "0",
+        "time.synchronize.continue": "0",
+        "time.synchronize.restore": "0",
+        "time.synchronize.resume.disk": "0",
+        "time.synchronize.shrink": "0",
+        "time.synchronize.tools.startup": "0",
+        "time.synchronize.tools.enable": "0",
+        "time.synchronize.resume.host": "0"
+      },
+      "winrm_username": "vagrant",
+      "winrm_password": "vagrant",
+      "winrm_timeout": "4h"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "windows-shell",
+      "execute_command": "{{ .Vars }} cmd /c \"{{ .Path }}\"",
+      "scripts": [
+        "./packer/scripts/vm-guest-tools.bat",
+        "./packer/scripts/enable-rdp.bat"
+      ]
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "./packer/scripts/debloat-windows.ps1"
+      ]
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "./packer/scripts/set-powerplan.ps1",
+        "./packer/scripts/docker/disable-windows-defender.ps1"
+      ]
+    },
+    {
+      "type": "windows-shell",
+      "execute_command": "{{ .Vars }} cmd /c \"{{ .Path }}\"",
+      "scripts": [
+        "./packer/scripts/pin-powershell.bat",
+        "./packer/scripts/compile-dotnet-assemblies.bat",
+        "./packer/scripts/set-winrm-automatic.bat",
+        "./packer/scripts/dis-updates.bat"
+      ]
+    }
+  ],
+  "variables": {
+    "esxi_datastore": "",
+    "esxi_host": "",
+    "esxi_username": "",
+    "esxi_password": "",
+    "iso_checksum": "78aa5fa0fd332ee0822ef5a533cd2cfe12333274",
+    "iso_url": "https://software.download.prss.microsoft.com/db/Win10_21H1_English_x64.iso?t=6cb0b5c6-ada0-4213-a358-88c3cb91c584&e=1645096401&h=02cdbbec368dac95d1e7aa5b1a436bbcd99c2bf4a6408f9c2cbac700cfd01094",
+    "autounattend": "./packer/answer_files/10/Autounattend.xml"
+  }
+}
+

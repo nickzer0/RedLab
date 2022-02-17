@@ -1,0 +1,18 @@
+ansible_user: vagrant
+ansible_password: vagrant
+ansible_port: 5985
+ansible_connection: winrm
+ansible_winrm_transport: basic
+ansible_winrm_server_cert_validation: ignore
+
+
+domain_name: hacklab.local
+
+domain_admin_user: overwatch
+domain_admin_pass: MasterPass123!
+
+domain_user_user: alice
+domain_user_pass: Testing123!
+
+exchange_domain_user: '{{ domain_admin_user }}@{{ domain_name | upper }}'
+exchange_domain_pass: '{{ domain_admin_pass }}'

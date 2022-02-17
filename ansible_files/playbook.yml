@@ -1,0 +1,25 @@
+---
+
+- hosts: dc1
+  strategy: free
+  gather_facts: False
+  roles:
+    - dc1
+  tags: dc1
+
+- hosts: workstation1
+  strategy: free
+  gather_facts: False
+  roles:
+    - workstation1
+    - common
+  tags: workstation1
+
+- hosts: workstation2
+  strategy: free
+  gather_facts: False
+  roles:
+    - workstation2
+    - common
+  tags: workstation2
+

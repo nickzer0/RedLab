@@ -1,0 +1,111 @@
+---
+
+- name: Disable Windows Firewall
+  win_shell: "Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False"
+
+- name: Hostname -> DC
+  win_hostname:
+    name: dc
+  register: res
+
+- name: Reboot
+  win_reboot:
+  when: res.reboot_required
+
+- name: Disable password complexity
+  win_security_policy:
+    section: System Access
+    key: PasswordComplexity
+    value: 0
+
+- name: Set Local Admin Password
+  win_user:
+    name: Administrator
+    password: '{{ domain_admin_pass }}'
+    state: present
+    groups_action: add
+    groups:
+      - Administrators
+      - Users
+  ignore_errors: yes
+
+- name: Set HostOnly IP address
+  win_shell: "If (-not(Get-NetIPAddress | where {$_.IPAddress -eq '192.168.56.100'})) {$adapter = (get-netadapter | where {$_.MacAddress -eq '00-50-56-A1-B2-C1'}).Name; New-NetIPAddress –InterfaceAlias $adapter –AddressFamily IPv4 -IPAddress 192.168.56.100 –PrefixLength 24 -DefaultGateway 192.168.56.1 } Else { Write-Host 'IP Address Already Created.' }"
+
+- name: Set DNS server
+  win_shell: "$adapter = (get-netadapter | where {$_.MacAddress -eq '00-50-56-A1-B2-C1'}).Name; Set-DnsClientServerAddress -InterfaceAlias $adapter -ServerAddresses 127.0.0.1,8.8.8.8"
+
+- name: Check Variables are Configured
+  assert:
+    that:
+    - domain_name is defined
+    - domain_admin_user is defined
+    - domain_admin_pass is defined
+
+- name: Install Active Directory Domain Services
+  win_feature: >
+       name=AD-Domain-Services
+       include_management_tools=yes
+       include_sub_features=yes
+       state=present
+  register: adds_installed
+
+- name: Install RSAT AD Admin Center
+  win_feature:
+    name: RSAT-AD-AdminCenter
+    state: present
+  register: rsat_installed
+
+- name: Rebooting
+  win_reboot:
+    reboot_timeout_sec: 60
+
+- name: Create Domain
+  win_domain:
+    dns_domain_name: '{{ domain_name }}'
+    safe_mode_password: '{{ domain_admin_pass }}'
+  register: domain_setup
+
+- name: Reboot After Domain Creation
+  win_reboot:
+  when: domain_setup.reboot_required
+
+- name: Create Domain Admin Account
+  win_domain_user:
+    name: '{{ domain_admin_user }}'
+    upn: '{{ domain_admin_user }}@{{ domain_name }}'
+    description: '{{ domain_admin_user }} Domain Account'
+    password: '{{ domain_admin_pass }}'
+    password_never_expires: yes
+    groups:
+    - Domain Admins
+    - Enterprise Admins
+    - Schema Admins
+    state: present
+  register: pri_domain_setup_create_user_result
+  retries: 30
+  delay: 15
+  until: pri_domain_setup_create_user_result is successful
+
+- name: Create Domain User Account
+  win_domain_user:
+    name: '{{ domain_user_user }}'
+    upn: '{{ domain_user_user }}@{{ domain_name }}'
+    description: '{{ domain_user_user }} Domain Account'
+    password: '{{ domain_user_pass }}'
+    password_never_expires: yes
+    groups:
+    - Domain Users
+    state: present
+  register: create_user_result
+  retries: 30
+  delay: 15
+  until: create_user_result is successful
+
+- name: Verify Account was Created
+  win_whoami:
+  become: yes
+  become_method: runas
+  vars:
+    ansible_become_user: '{{ domain_admin_user }}@{{ domain_name }}'
+    ansible_become_pass: '{{ domain_admin_pass }}'

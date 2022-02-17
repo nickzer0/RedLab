@@ -1,0 +1,11 @@
+dc1:
+  hosts:
+    192.168.X.X:
+
+workstation1:
+  hosts:
+    192.168.X.X:
+
+workstation2:
+  hosts:
+    192.168.X.X:

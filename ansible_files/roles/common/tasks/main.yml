@@ -1,0 +1,35 @@
+---
+
+- name: Disable Windows Firewall
+  win_shell: "Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False"
+
+- name: Install git
+  win_chocolatey:
+    name: git
+    state: present
+
+- name: Check Variables are Set
+  assert:
+    that:
+    - domain_admin_user is defined
+    - domain_admin_pass is defined
+
+- name: Join Host to Domain
+  win_domain_membership:
+    dns_domain_name: '{{ domain_name }}'
+    domain_admin_user: '{{ domain_admin_user }}@{{ domain_name }}'
+    domain_admin_password: '{{ domain_admin_pass }}'
+    state: domain
+  register: domain_join_result
+
+- name: Reboot Host After Joining Domain
+  win_reboot:
+  when: domain_join_result.reboot_required
+
+- name: Test Domain User Login
+  win_whoami:
+  become: yes
+  become_method: runas
+  vars:
+    ansible_become_user: '{{ domain_user_user }}@{{ domain_name}}'
+    ansible_become_password: '{{ domain_user_pass }}'
