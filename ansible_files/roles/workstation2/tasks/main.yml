@@ -1,8 +1,8 @@
 ---
 
-- name: Hostname -> workstation1
+- name: Hostname -> workstation2
   win_hostname:
-    name: workstation1
+    name: workstation2
   register: res
 
 - name: Reboot
