@@ -1,11 +1,22 @@
+---
+
+logger:
+  hosts:
+    192.168.1.171:
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_port: 22
+      ansible_connection: ssh
+      ansible_ssh_common_args: '-o UserKnownHostsFile=/dev/null'
+
 dc1:
   hosts:
-    192.168.X.X:
+    192.168.1.103:
 
 workstation1:
   hosts:
-    192.168.X.X:
+    192.168.1.210:
 
 workstation2:
   hosts:
-    192.168.X.X:
+    192.168.1.211:

@@ -1,15 +1,19 @@
 ---
 
+- hosts: logger
+  roles:
+    - logger
+  tags: logger
+
 - hosts: dc1
   strategy: free
-  gather_facts: False
   roles:
     - dc1
+    - monitor
   tags: dc1
 
 - hosts: workstation1
   strategy: free
-  gather_facts: False
   roles:
     - workstation1
     - common
@@ -17,7 +21,6 @@
 
 - hosts: workstation2
   strategy: free
-  gather_facts: False
   roles:
     - workstation2
     - common

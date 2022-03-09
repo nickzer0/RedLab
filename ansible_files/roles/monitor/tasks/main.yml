@@ -1,0 +1,27 @@
+---
+
+- name: Downloading Winlogbeat
+  win_get_url:
+    url: https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-8.0.0-windows-x86_64.zip
+    dest: C:\Windows\Temp\winlogbeat.zip
+
+- name: Unzipping Winlogbeat archive
+  win_unzip:
+    src: C:\Windows\Temp\winlogbeat.zip
+    dest: C:\Windows\Temp\winlogbeat
+    delete_archive: yes
+
+- name: Copy Winlogbeat config file
+  win_copy:
+    src: config/winlogbeat.yml
+    dest: C:\Windows\Temp\winlogbeat\winlogbeat.yml
+
+- name: Add in our ELK IP
+  win_lineinfile:
+    path: C:\Windows\Temp\winlogbeat\winlogbeat.yml
+    regexp: 'ELKIPHERE'
+    line: 'test'
+
+- name: Test
+  debug:
+    msg: "{{ hostvars['logger'].ansible_eth0.ipv4.address }}"

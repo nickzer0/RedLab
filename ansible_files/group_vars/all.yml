@@ -16,3 +16,4 @@ domain_user_pass: Testing123!
 
 exchange_domain_user: '{{ domain_admin_user }}@{{ domain_name | upper }}'
 exchange_domain_pass: '{{ domain_admin_pass }}'
+

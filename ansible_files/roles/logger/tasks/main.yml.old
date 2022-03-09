@@ -1,0 +1,59 @@
+---
+
+- name: Set hostname to logger
+  hostname:
+    name: logger
+  become: yes
+
+- name: Add GPG key for Elastic repo
+  shell: wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+
+- name: Install transport-https
+  apt:
+    name: apt-transport-https
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Add the repo
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    state: present
+  become: yes
+
+- name: Install ELK
+  apt:
+    pkg:
+    - logstash
+    - openjdk-11-jre
+    - elasticsearch
+    - kibana
+    update_cache: yes
+    state: present
+  become: yes
+
+- name: Enable ELK services
+  become: yes
+  shell: /bin/systemctl enable elasticsearch.service && /bin/systemctl enable kibana.service && /bin/systemctl enable logstash.service
+
+- name: Edit Kibana config
+  become: yes
+  shell: |
+    sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/g' /etc/kibana/kibana.yml; sed -i 's/#server.port: 5601/server.port: 5601/g' /etc/kibana/kibana.yml
+
+- name: Edit Elastic config
+  become: yes
+  shell: |
+    sed -i 's/#network.host: 192.168.0.1/network.host: "0.0.0.0"/g' /etc/elasticsearch/elasticsearch.yml; sed -i 's/#http.port: 9200/http.port: 9200/g' /etc/elasticsearch/elasticsearch.yml
+
+- name: Checking discovery type to Elastic config
+  become: yes
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: "discovery.type: single-node"
+    state: present
+  register: discoverytype
+
+- name: Starting ELK services
+  become: yes
+  shell: service logstash start && service elasticsearch start && service kibana start
