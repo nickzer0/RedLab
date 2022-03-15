@@ -1,0 +1,32 @@
+---
+- name: Create directory
+  win_shell: |
+    New-Item -Path 'C:\Winlogbeat' -ItemType Directory
+
+- name: Downloading Winlogbeat
+  win_get_url:
+    url: https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-8.0.0-windows-x86_64.zip
+    dest: C:\Winlogbeat\winlogbeat.zip
+
+- name: Unzipping Winlogbeat archive
+  win_unzip:
+    src: C:\Winlogbeat\winlogbeat.zip
+    dest: C:\Winlogbeat
+    delete_archive: yes
+    creates: C:\Winlogbeat\winlogbeat-8.0.0-windows-x86_64\
+
+- name: Copy Winlogbeat config file
+  win_copy:
+    src: config/winlogbeat.yml
+    dest: C:\Winlogbeat\winlogbeat-8.0.0-windows-x86_64\winlogbeat.yml
+
+- name: Add in our ELK IP to config file
+  win_shell: |
+    (Get-Content "C:\Winlogbeat\winlogbeat-8.0.0-windows-x86_64\winlogbeat.yml").replace('ELKIPHERE', '{{ loggerip }}') | Set-Content -Path "C:\Winlogbeat\winlogbeat-8.0.0-windows-x86_64\winlogbeat.yml" -Encoding Ascii
+
+- name: Install Winlogbeat
+  win_shell: C:\Winlogbeat\winlogbeat-8.0.0-windows-x86_64\install-service-winlogbeat.ps1
+
+- name: Start Winlogbeat service
+  win_shell: Start-Service winlogbeat
+

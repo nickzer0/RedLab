@@ -1,5 +1,5 @@
 {
-    "esxi_host": "192.168.X.X",
+    "esxi_host": "<IP>",
     "esxi_datastore": "datastore",
     "esxi_username": "root",
     "esxi_password": "<password>",

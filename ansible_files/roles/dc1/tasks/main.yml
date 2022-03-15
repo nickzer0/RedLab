@@ -59,6 +59,7 @@
 - name: Rebooting
   win_reboot:
     reboot_timeout_sec: 60
+  when: rsat_installed.reboot_required
 
 - name: Create Domain
   win_domain:
