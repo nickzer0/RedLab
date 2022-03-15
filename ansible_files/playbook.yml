@@ -17,6 +17,7 @@
   roles:
     - workstation1
     - common
+    - monitor
   tags: workstation1
 
 - hosts: workstation2
@@ -24,5 +25,5 @@
   roles:
     - workstation2
     - common
+    - monitor
   tags: workstation2
-

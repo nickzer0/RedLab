@@ -20,3 +20,7 @@ workstation1:
 workstation2:
   hosts:
     192.168.1.211:
+
+all:
+  vars:
+    loggerip: 192.168.1.171
