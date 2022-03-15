@@ -1,7 +1,7 @@
 {
-    "esxi_host": "192.168.X.X",
+    "esxi_host": "192.168.1.20",
     "esxi_datastore": "datastore",
     "esxi_username": "root",
-    "esxi_password": "<password>",
+    "esxi_password": "p3nt3st3r",
     "esxi_network_with_dhcp_and_internet": "VM Network"
 }

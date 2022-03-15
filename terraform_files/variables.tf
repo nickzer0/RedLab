@@ -1,5 +1,5 @@
 variable "esxi_hostname" {
-  default = "192.168.1.X"
+  default = "192.168.1.20"
 }
 
 variable "esxi_hostport" {
@@ -11,11 +11,11 @@ variable "esxi_username" {
 }
 
 variable "esxi_password" { 
-  default = "<password>"
+  default = "p3nt3st3r"
 }
 
 variable "esxi_datastore" {
-  default = "<datastore>"
+  default = "datastore"
 }
 
 variable "vm_network" {

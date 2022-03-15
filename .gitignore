@@ -1,3 +1,5 @@
 *packer_cache*
 *.tfstate*
 *.iso*
+variables.json
+variables.tf
