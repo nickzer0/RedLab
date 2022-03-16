@@ -100,8 +100,8 @@
     "esxi_host": "",
     "esxi_username": "",
     "esxi_password": "",
-    "iso_checksum": "78aa5fa0fd332ee0822ef5a533cd2cfe12333274",
-    "iso_url": "https://software.download.prss.microsoft.com/db/Win10_21H1_English_x64.iso?t=6cb0b5c6-ada0-4213-a358-88c3cb91c584&e=1645096401&h=02cdbbec368dac95d1e7aa5b1a436bbcd99c2bf4a6408f9c2cbac700cfd01094",
+    "iso_checksum": "md5:823c3cb59ff0fd43272f12bb2e3a089d",
+    "iso_url": "https://software.download.prss.microsoft.com/db/Win10_21H2_English_x64.iso?t=c827a38d-c632-48a5-85f7-b15f00531ee6&e=1647515032&h=ca02b7026b799096cf3bfa06623b669e3de08ae5a1222b946f6cd25dba0a2807",
     "autounattend": "./packer/answer_files/10/Autounattend.xml"
   }
 }
