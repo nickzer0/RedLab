@@ -8,7 +8,7 @@ First, browse to the [MS Windows 10 Website](https://www.microsoft.com/en-gb/sof
 
 Next, (in Chrome at least) press F12 to open developer tools and go to the Network tab. Click the little "Wifi/cog" icon and change the User agent to "Safari - Mac" then refresh the Microsoft page in your browser. You should now be able to download the actual ISO.
 
-Right click the "64-bit download" button, and select copy link address, and put it into a URL shortener such as [this](https://www.shorturl.at/]. 
+Right click the "64-bit download" button, and select copy link address, and put it into a URL shortener such as [this](https://www.shorturl.at).
 
 Add this shortened URL into the Windows10.json file.
 
